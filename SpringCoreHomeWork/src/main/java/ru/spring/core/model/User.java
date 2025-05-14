@@ -1,13 +1,23 @@
 package ru.spring.core.model;
 
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Data
-@Slf4j
+@NoArgsConstructor
+//@Slf4j
+@Component
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class User {
+
+    public User(String login) {
+        this.login = login;
+    }
 
     private long id;
 
