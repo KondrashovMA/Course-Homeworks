@@ -10,7 +10,6 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-//@Slf4j
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class User {
@@ -24,4 +23,13 @@ public class User {
     private String login;
 
     private List<Account> accountList;
+
+    @Override
+    public String toString() {
+        return "User id = " +
+                id +
+                "; " +
+                "Login = " +
+                login;
+    }
 }
