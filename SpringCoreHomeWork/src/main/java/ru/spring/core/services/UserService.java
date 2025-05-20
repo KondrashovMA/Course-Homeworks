@@ -9,10 +9,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-    
+
     private Map<Long, User> createdUsers = new HashMap<>();
 
     public long createUserByLoginAndGetId(String login) {
@@ -21,11 +22,12 @@ public class UserService {
         user.setId(id);
         user.setAccountList(new ArrayList<>());
         createdUsers.put(id, user);
+        System.out.println(String.format("User with name %s created with id %d", login, id));
         return id;
     }
 
     public List<User> getAllUsers() {
-        return (List<User>) createdUsers.values();
+        return new ArrayList<>(createdUsers.values());
     }
 
     public boolean isUniqueLogin(String login) {

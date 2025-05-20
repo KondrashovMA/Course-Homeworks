@@ -34,9 +34,8 @@ public class AccountCreateHandler implements CommandHandler {
         try {
             long id = Long.parseLong(inputResult);
             if(userService.checkUserExistsById(id)) {
-                Account account = accountService.createAccountForUserById(id);
+                Account account = accountService.createAccountForUserByUserId(id);
                 userService.addAccountToUserByUserId(id, account);
-                System.out.println("New account created for user with id " + id);
             } else{
                 System.out.println("A non-existent id has been entered, please repeat the command and enter the correct id");
             }

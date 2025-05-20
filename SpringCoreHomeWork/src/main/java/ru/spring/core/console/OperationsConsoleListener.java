@@ -31,6 +31,8 @@ public class OperationsConsoleListener {
 
         while (true) {
             System.out.println("PleaseEnter one of operation type below. If you need to stop working with service enter EXIT (also QUIT or q)");
+            System.out.println("Available commands: ");
+            commandHandlers.forEach(commandHandler -> System.out.println(commandHandler.getHandlerName()));
 
             try {
                 String inputResult = inputScanner.next();
