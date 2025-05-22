@@ -6,6 +6,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Data
@@ -28,8 +29,8 @@ public class User {
     public String toString() {
         return "User id = " +
                 id +
-                "; " +
-                "Login = " +
-                login;
+                "; Login = " +
+                login +
+                "; accounts: " + Arrays.toString(accountList.toArray());
     }
 }

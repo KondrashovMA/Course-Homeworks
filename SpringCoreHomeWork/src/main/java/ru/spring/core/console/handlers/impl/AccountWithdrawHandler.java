@@ -1,6 +1,5 @@
 package ru.spring.core.console.handlers.impl;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.spring.core.console.handlers.CommandHandler;
 import ru.spring.core.services.AccountService;
@@ -8,7 +7,6 @@ import ru.spring.core.services.AccountService;
 import java.util.Scanner;
 
 @Component
-@Slf4j
 public class AccountWithdrawHandler implements CommandHandler {
 
     private final String COMMAND_NAME = "ACCOUNT_WITHDRAW";
@@ -36,7 +34,7 @@ public class AccountWithdrawHandler implements CommandHandler {
                 System.out.println("A non-existent id for account has been entered, please repeat the command and enter the correct id");
             }
         } catch (NumberFormatException e) {
-            log.error("If you entered a wrong number, please repeat the command and enter the correct id (an integer from 0 or more)");
+            System.out.println("If you entered a wrong number, please repeat the command and enter the correct id or money amount (an integer from 0 or more)");
         }
     }
 

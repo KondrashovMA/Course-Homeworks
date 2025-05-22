@@ -8,7 +8,6 @@ import ru.spring.core.services.AccountService;
 import java.util.Scanner;
 
 @Component
-@Slf4j
 public class AccountTransferHandler implements CommandHandler {
 
     private final String COMMAND_NAME = "ACCOUNT_TRANSFER";
@@ -42,7 +41,7 @@ public class AccountTransferHandler implements CommandHandler {
                 System.out.println("A non-existent ids for accounts has been entered, please repeat the command and enter the correct ids");
             }
         } catch (NumberFormatException e) {
-            log.error("If you entered a wrong number, please repeat the command and enter the correct id (an integer from 0 or more)");
+            System.out.println("If you entered a wrong number, please repeat the command and enter the correct id or money amount (an integer from 0 or more)");
         }
     }
 

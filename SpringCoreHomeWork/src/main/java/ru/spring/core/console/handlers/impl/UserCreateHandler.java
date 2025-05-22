@@ -8,7 +8,6 @@ import ru.spring.core.services.UserService;
 import java.util.Scanner;
 
 @Component
-@Slf4j
 public class UserCreateHandler implements CommandHandler {
 
     private final String COMMAND_NAME = "USER_CREATE";
@@ -33,7 +32,7 @@ public class UserCreateHandler implements CommandHandler {
                 System.out.println("User with name " + inputResult + " exists. Please repeat command with new Name");
             }
         } catch (RuntimeException e){
-            log.error("Error while creating user: " + e);
+            System.out.println("Error while creating user: " + e);
         }
     }
 

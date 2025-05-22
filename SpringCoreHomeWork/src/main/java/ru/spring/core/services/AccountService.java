@@ -1,6 +1,5 @@
 package ru.spring.core.services;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.spring.core.model.Account;
@@ -12,50 +11,55 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class AccountService {
 
-    @Value("#{T(java.lang.Long).parseLong('${account.default-amount:500}')}")
+    @Value("${account.default-amount}")
     private long defaultAccountMoneyAmount;
 
-    @Value("#{T(java.lang.Long).parseLong('${account.transfer-commission:5}')}")
-    private long commission;
+    @Value("${account.transfer-commission}")
+    private long defaultCommission;
 
     private Map<Long, Account> accountMap = new HashMap<>();
+    private static long currentAccountId = 0;
+    private final UserService userService;
+    public AccountService(UserService userService) {
+        this.userService = userService;
+    }
 
-    public Account createAccountForUserByUserId(long id) {
+    public void createAccountForUserByUserId(long userId) {
         Account account = new Account();
-        account.setUserId(id);
+        account.setUserId(userId);
         account.setMoneyAmount(defaultAccountMoneyAmount);
-        long accountId = accountMap.size() + 1;
+        long accountId = currentAccountId++;
         account.setId(accountId);
         accountMap.put(accountId, account);
+        userService.addAccountToUserByUserId(userId, account);
+
         System.out.println(String.format("Account with id %d successfully created", accountId));
-        return account;
     }
 
     public boolean checkAccountExistsById(long id) {
         return accountMap.containsKey(id);
     }
 
-    public void addMoneyToAccountByAccountId(long id, long moneyAmount){
+    public void addMoneyToAccountByAccountId(long accountId, long moneyAmount){
         if(moneyAmount < 0) {
-            log.error("Amount can't be below zero");
+            System.out.println("Amount can't be below zero");
             return;
         }
-        Account account = accountMap.get(id);
+        Account account = accountMap.get(accountId);
         account.setMoneyAmount(account.getMoneyAmount() + moneyAmount);
-        System.out.println(String.format("Successfully added %d money", moneyAmount));
+        System.out.println(String.format("Successfully added %d money to account %d", moneyAmount, accountId));
     }
 
     public void withdrawMoneyToAccountByAccountId(long id, long moneyAmount){
         if(moneyAmount < 0) {
-            log.error("Amount can't be below zero");
+            System.out.println("Amount can't be below zero");
             return;
         }
         Account account = accountMap.get(id);
         if(moneyAmount > account.getMoneyAmount()){
-            log.error("An attempt to withdraw more money than is available on the account");
+            System.out.println("An attempt to withdraw more money than is available on the account");
             return;
         }
         account.setMoneyAmount(account.getMoneyAmount() - moneyAmount);
@@ -64,31 +68,37 @@ public class AccountService {
 
     public void transferMoneyBetweenAccounts(long idFrom, long idTo, long moneyAmount) {
         if(moneyAmount < 0) {
-            log.error("Amount can't be below zero");
+            System.out.println("Amount can't be below zero");
             return;
+        }
+        long commission = defaultCommission;
+        if(checkDoBelongTwoAccountToOneUser(idFrom, idTo)) {
+            commission = 0;
         }
         Account accountFrom = accountMap.get(idFrom);
         long moneyAmountWithCommission = (long) moneyAmount * (commission + 100) / 100;
         if(accountFrom.getMoneyAmount() < moneyAmountWithCommission) {
-            log.error("An attempt to transfer more money with commission than is available on the account");
+            System.out.println("An attempt to transfer more money with commission than is available on the account");
+            return;
         }
-        Account accountTo = accountMap.get(idTo);
-        accountFrom.setMoneyAmount(accountFrom.getMoneyAmount() - moneyAmountWithCommission);
-        accountTo.setMoneyAmount(accountTo.getMoneyAmount() + moneyAmount);
+        this.withdrawMoneyToAccountByAccountId(idFrom, moneyAmountWithCommission);
+        this.addMoneyToAccountByAccountId(idTo, moneyAmount);
         System.out.println(String.format("Money has been successfully transferred between accounts %d and %d", idFrom, idTo));
     }
 
-    public void closeAccount(long id) {
-        Account account = accountMap.get(id);
-        List<Account> allUserAccounts = getAllAccountsForUserByUserId(account.getUserId());
+    public void closeAccount(long accountId) {
+        Account accountToClose = accountMap.get(accountId);
+        List<Account> allUserAccounts = getAllAccountsForUserByUserId(accountToClose.getUserId());
         if(allUserAccounts.size() <= 1) {
-            log.error("The user has 1 or fewer accounts");
+            System.out.println("The user has 1 or fewer accounts");
+            return;
         }
-        long moneyAmountToTransfer = account.getMoneyAmount();
-        Account accountForTransfer = allUserAccounts.stream().filter(acc -> acc.getId() != id).findFirst().get();
+        long moneyAmountToTransfer = accountToClose.getMoneyAmount();
+        Account accountForTransfer = allUserAccounts.stream().filter(acc -> acc.getId() != accountId).findFirst().get();
         this.addMoneyToAccountByAccountId(accountForTransfer.getId(), moneyAmountToTransfer);
-        accountMap.remove(id);
-        System.out.println("All money from account with id " + id + " was transfered to account with id "
+        accountMap.remove(accountId);
+        userService.deleteAccountFromUserByUserId(accountToClose.getUserId(), accountToClose);
+        System.out.println("All money from account with id " + accountId + " was transfered to account with id "
                 + accountForTransfer.getId() + ". Account closed");
     }
 
@@ -98,5 +108,9 @@ public class AccountService {
                 .filter(account -> account.getUserId() == id)
                 .sorted(Comparator.comparingLong(Account::getId))
                 .collect(Collectors.toList());
+    }
+
+    private boolean checkDoBelongTwoAccountToOneUser(long firstAccountId, long secondAccountId) {
+        return accountMap.get(firstAccountId).getUserId() == accountMap.get(secondAccountId).getUserId();
     }
 }

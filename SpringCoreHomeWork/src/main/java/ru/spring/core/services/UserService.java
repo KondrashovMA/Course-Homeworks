@@ -9,16 +9,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     private Map<Long, User> createdUsers = new HashMap<>();
+    private static long currentUserId = 0;
 
     public long createUserByLoginAndGetId(String login) {
         User user = new User(login);
-        long id = createdUsers.size() + 1;
+        long id = currentUserId++;
         user.setId(id);
         user.setAccountList(new ArrayList<>());
         createdUsers.put(id, user);
@@ -43,12 +43,12 @@ public class UserService {
         return createdUsers.containsKey(id);
     }
 
-    public void addAccountToUserByUserId(long id, Account account) {
-        for(User user : this.getAllUsers()) {
-            if(user.getId() == id){
-                user.getAccountList().add(account);
-            }
-        }
+    public void addAccountToUserByUserId(long userId, Account account) {
+        createdUsers.get(userId).getAccountList().add(account);
+    }
+
+    public void deleteAccountFromUserByUserId(long userId, Account account) {
+        createdUsers.get(userId).getAccountList().remove(account);
     }
 
 }

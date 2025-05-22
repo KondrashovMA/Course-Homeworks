@@ -1,6 +1,5 @@
 package ru.spring.core.console;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.maven.surefire.shared.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +12,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-@Slf4j
 public class OperationsConsoleListener {
 
     private final List<String> QUIT_COMMANDS = List.of("quit", "q", "exit");
@@ -50,7 +48,7 @@ public class OperationsConsoleListener {
                     System.out.println("You have entered an unknown command, please repeat.");
                 }
             } catch (RuntimeException e) {
-                log.error("Error while working: " + e);
+                System.out.println("Error while working: " + e);
                 break;
             }
         }
