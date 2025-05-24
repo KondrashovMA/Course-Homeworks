@@ -13,14 +13,15 @@ public class AccountTransferHandler implements CommandHandler {
     private final String COMMAND_NAME = "ACCOUNT_TRANSFER";
 
     private final AccountService accountService;
-    public AccountTransferHandler(AccountService accountService) {
+    private final Scanner inputScanner;
+    public AccountTransferHandler(AccountService accountService, Scanner inputScanner) {
         this.accountService = accountService;
+        this.inputScanner = inputScanner;
     }
 
     @Override
     public void handle() {
         try {
-            Scanner inputScanner = new Scanner(System.in);
             System.out.println("Enter the ID of the account that the money is being transferred from: ");
 
             String inputResult = inputScanner.next();

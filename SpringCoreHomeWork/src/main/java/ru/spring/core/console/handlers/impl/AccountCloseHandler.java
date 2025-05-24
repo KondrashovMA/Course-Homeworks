@@ -12,13 +12,14 @@ public class AccountCloseHandler implements CommandHandler {
     private final String COMMAND_NAME = "ACCOUNT_CLOSE";
 
     private final AccountService accountService;
+    private final Scanner inputScanner;
 
-    public AccountCloseHandler(AccountService accountService) {
+    public AccountCloseHandler(AccountService accountService, Scanner inputScanner) {
         this.accountService = accountService;
+        this.inputScanner = inputScanner;
     }
     @Override
     public void handle() {
-        Scanner inputScanner = new Scanner(System.in);
         System.out.println("Enter id of account for closing: ");
         String inputResult = inputScanner.next();
         try {

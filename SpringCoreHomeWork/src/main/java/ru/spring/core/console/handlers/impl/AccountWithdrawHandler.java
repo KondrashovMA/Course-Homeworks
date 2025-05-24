@@ -12,14 +12,15 @@ public class AccountWithdrawHandler implements CommandHandler {
     private final String COMMAND_NAME = "ACCOUNT_WITHDRAW";
 
     private final AccountService accountService;
+    private final Scanner inputScanner;
 
-    public AccountWithdrawHandler(AccountService accountService) {
+    public AccountWithdrawHandler(AccountService accountService, Scanner inputScanner) {
         this.accountService = accountService;
+        this.inputScanner = inputScanner;
     }
 
     @Override
     public void handle() {
-        Scanner inputScanner = new Scanner(System.in);
         System.out.println("Enter id of account: ");
         String inputResult = inputScanner.next();
         try {

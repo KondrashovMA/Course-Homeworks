@@ -17,14 +17,14 @@ public class OperationsConsoleListener {
     private final List<String> QUIT_COMMANDS = List.of("quit", "q", "exit");
 
     private final List<CommandHandler> commandHandlers;
+    private final Scanner inputScanner;
 
-    public OperationsConsoleListener(List<CommandHandler> commandHandlers) {
+    public OperationsConsoleListener(List<CommandHandler> commandHandlers, Scanner scanner) {
         this.commandHandlers = commandHandlers;
+        this.inputScanner = scanner;
     }
 
     public void startHandleConsole() {
-        Scanner inputScanner = new Scanner(System.in);
-
         Map<String, CommandHandler> handlerMap = commandHandlers.stream().collect(Collectors.toMap(CommandHandler::getHandlerName, Function.identity()));
 
         while (true) {

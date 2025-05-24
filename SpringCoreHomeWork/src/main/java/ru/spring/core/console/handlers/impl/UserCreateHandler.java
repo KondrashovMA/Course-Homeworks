@@ -13,16 +13,16 @@ public class UserCreateHandler implements CommandHandler {
     private final String COMMAND_NAME = "USER_CREATE";
 
     private final UserService userService;
+    private final Scanner inputScanner;
 
-    public UserCreateHandler(UserService userService) {
+    public UserCreateHandler(UserService userService, Scanner inputScanner) {
         this.userService = userService;
+        this.inputScanner = inputScanner;
     }
 
     @Override
     public void handle() {
         System.out.println("Please enter login for user:");
-
-        Scanner inputScanner = new Scanner(System.in);
         String inputResult = inputScanner.next();
         try {
             if(userService.isUniqueLogin(inputResult)) {

@@ -12,14 +12,15 @@ public class AccountDepositHandler implements CommandHandler {
     private final String COMMAND_NAME = "ACCOUNT_DEPOSIT";
 
     private final AccountService accountService;
+    private final Scanner inputScanner;
 
-    public AccountDepositHandler(AccountService accountService) {
+    public AccountDepositHandler(AccountService accountService, Scanner inputScanner) {
         this.accountService = accountService;
+        this.inputScanner = inputScanner;
     }
 
     @Override
     public void handle() {
-        Scanner inputScanner = new Scanner(System.in);
         System.out.println("Enter id of account: ");
         String inputResult = inputScanner.next();
         try {

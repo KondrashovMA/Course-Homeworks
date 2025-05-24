@@ -14,17 +14,17 @@ public class AccountCreateHandler implements CommandHandler {
 
     private final UserService userService;
     private final AccountService accountService;
+    private final Scanner inputScanner;
 
-    public AccountCreateHandler(UserService userService, AccountService accountService) {
+    public AccountCreateHandler(UserService userService, AccountService accountService, Scanner inputScanner) {
         this.userService = userService;
         this.accountService = accountService;
+        this.inputScanner = inputScanner;
     }
 
     @Override
     public void handle() {
         System.out.println("Please enter user id");
-
-        Scanner inputScanner = new Scanner(System.in);
         String inputResult = inputScanner.next();
 
         try {
