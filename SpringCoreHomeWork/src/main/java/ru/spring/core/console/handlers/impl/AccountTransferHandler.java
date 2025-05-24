@@ -1,6 +1,5 @@
 package ru.spring.core.console.handlers.impl;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.spring.core.console.handlers.CommandHandler;
 import ru.spring.core.services.AccountService;

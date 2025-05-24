@@ -1,5 +1,6 @@
 package ru.spring.core.console;
 
+import jakarta.annotation.PostConstruct;
 import org.apache.maven.surefire.shared.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +25,7 @@ public class OperationsConsoleListener {
         this.inputScanner = scanner;
     }
 
+    @PostConstruct
     public void startHandleConsole() {
         Map<String, CommandHandler> handlerMap = commandHandlers.stream().collect(Collectors.toMap(CommandHandler::getHandlerName, Function.identity()));
 

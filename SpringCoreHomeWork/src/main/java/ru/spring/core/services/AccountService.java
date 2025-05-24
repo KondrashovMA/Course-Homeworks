@@ -21,21 +21,16 @@ public class AccountService {
 
     private Map<Long, Account> accountMap = new HashMap<>();
     private static long currentAccountId = 0;
-    private final UserService userService;
-    public AccountService(UserService userService) {
-        this.userService = userService;
-    }
 
-    public void createAccountForUserByUserId(long userId) {
+    public Account createAccountForUserByUserId(long userId) {
         Account account = new Account();
         account.setUserId(userId);
         account.setMoneyAmount(defaultAccountMoneyAmount);
         long accountId = currentAccountId++;
         account.setId(accountId);
         accountMap.put(accountId, account);
-        userService.addAccountToUserByUserId(userId, account);
-
         System.out.println(String.format("Account with id %d successfully created", accountId));
+        return account;
     }
 
     public boolean checkAccountExistsById(long id) {
@@ -97,7 +92,6 @@ public class AccountService {
         Account accountForTransfer = allUserAccounts.stream().filter(acc -> acc.getId() != accountId).findFirst().get();
         this.addMoneyToAccountByAccountId(accountForTransfer.getId(), moneyAmountToTransfer);
         accountMap.remove(accountId);
-        userService.deleteAccountFromUserByUserId(accountToClose.getUserId(), accountToClose);
         System.out.println("All money from account with id " + accountId + " was transfered to account with id "
                 + accountForTransfer.getId() + ". Account closed");
     }
