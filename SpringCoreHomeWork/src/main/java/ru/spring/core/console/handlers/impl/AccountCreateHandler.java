@@ -1,5 +1,6 @@
 package ru.spring.core.console.handlers.impl;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
 import ru.spring.core.console.handlers.CommandHandler;
 import ru.spring.core.services.AccountService;
@@ -23,6 +24,7 @@ public class AccountCreateHandler implements CommandHandler {
     }
 
     @Override
+    @Transactional
     public void handle() {
         System.out.println("Please enter user id");
         String inputResult = inputScanner.next();
@@ -30,7 +32,7 @@ public class AccountCreateHandler implements CommandHandler {
         try {
             long id = Long.parseLong(inputResult);
             if(userService.checkUserExistsById(id)) {
-                accountService.createAccountForUserByUserId(id);
+                accountService.createAccountForUserByUser(userService.getUserById(id));
             } else{
                 System.out.println("A non-existent id has been entered, please repeat the command and enter the correct id");
             }
