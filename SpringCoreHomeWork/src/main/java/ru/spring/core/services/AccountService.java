@@ -2,7 +2,7 @@ package ru.spring.core.services;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.spring.core.dao.AccountRepository;
+import ru.spring.core.repository.AccountRepository;
 import ru.spring.core.model.Account;
 import ru.spring.core.model.User;
 

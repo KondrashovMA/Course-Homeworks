@@ -1,4 +1,4 @@
-package ru.spring.core.dao;
+package ru.spring.core.repository;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

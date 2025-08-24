@@ -1,8 +1,7 @@
-package ru.spring.core.dao;
+package ru.spring.core.repository;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.springframework.stereotype.Component;
 import ru.spring.core.model.Account;
 import ru.spring.core.model.User;

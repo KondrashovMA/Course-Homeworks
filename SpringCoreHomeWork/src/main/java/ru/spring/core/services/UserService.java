@@ -2,7 +2,7 @@ package ru.spring.core.services;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import ru.spring.core.dao.UserRepository;
+import ru.spring.core.repository.UserRepository;
 import ru.spring.core.model.User;
 
 import java.util.List;
