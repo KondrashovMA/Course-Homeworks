@@ -39,6 +39,8 @@ public class TransactionsService {
         try (Session session = sessionFactory.openSession()) {
             if (Objects.nonNull(transaction) && transaction.isActive()) {
                 action.accept(session);
+            } else {
+                executeTransaction(session1 -> {action.accept(session);});
             }
         }
     }
@@ -68,9 +70,10 @@ public class TransactionsService {
 
                 session.getTransaction().commit();
                 return result;
+            } else {
+                return executeTransaction(action);
             }
         }
-        return null;
     }
 
 }

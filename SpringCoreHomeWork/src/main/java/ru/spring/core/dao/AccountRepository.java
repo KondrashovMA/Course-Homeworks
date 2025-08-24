@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
-public class AccountDao {
+public class AccountRepository {
 
     private final SessionFactory sessionFactory;
     private final TransactionsService transactionsService;
 
-    public AccountDao(SessionFactory sessionFactory, TransactionsService transactionsService) {
+    public AccountRepository(SessionFactory sessionFactory, TransactionsService transactionsService) {
         this.sessionFactory = sessionFactory;
         this.transactionsService = transactionsService;
     }
@@ -27,7 +27,7 @@ public class AccountDao {
         }
     }
 
-    public Account createAccountAndReturn(Account createdAccount) {
+    public Account saveAccount(Account createdAccount) {
         return transactionsService.executeTransaction(
                 session -> {
                     session.persist(createdAccount);
@@ -95,6 +95,29 @@ public class AccountDao {
             session.getTransaction().commit();
         }
     }
+
+    public void closeAccount(Account accountToClose, List<Account> allUserAccounts) {
+        Transaction transaction = null;
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.getTransaction();
+            transaction.begin();
+
+            transactionsService.executeTransaction(
+                    session1 -> {
+                        long moneyAmountToTransfer = accountToClose.getMoneyAmount();
+                        Account accountForTransfer = allUserAccounts.stream().filter(acc -> !acc.getId().equals(accountToClose.getId())).findFirst().get();
+                        if(accountForTransfer.getMoneyAmount() < 0) {
+                            System.out.println("Amount can't be below zero");
+                            return;
+                        }
+                        addMoneyToAccountByAccountId(accountForTransfer.getId(), moneyAmountToTransfer);
+                        removeAccount(accountToClose.getId());
+                    }, transaction);
+
+            session.getTransaction().commit();
+        }
+    }
+
 
     public boolean checkDoBelongTwoAccountToOneUser(long firstAccountId, long secondAccountId) {
         try (Session session = sessionFactory.openSession()) {

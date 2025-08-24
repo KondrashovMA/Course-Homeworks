@@ -9,18 +9,16 @@ import ru.spring.core.model.User;
 import ru.spring.core.services.AccountService;
 import ru.spring.core.services.TransactionsService;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Component
-public class UserDao {
+public class UserRepository {
 
     private final SessionFactory sessionFactory;
     private final TransactionsService transactionsService;
     private final AccountService accountService;
 
-    public UserDao(SessionFactory sessionFactory, TransactionsService transactionsService, AccountService accountService) {
+    public UserRepository(SessionFactory sessionFactory, TransactionsService transactionsService, AccountService accountService) {
         this.sessionFactory = sessionFactory;
         this.transactionsService = transactionsService;
         this.accountService = accountService;
@@ -33,26 +31,13 @@ public class UserDao {
     }
 
     public User createUserByLogin(User createdUser) {
-        Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
-            transaction = session.getTransaction();
-            transaction.begin();
-
-            Account account = accountService.createAccountWithoutSaving();
+        return transactionsService.executeTransaction(session -> {
+            Account account = accountService.createEmptyAccount();
             account.setUser(createdUser);
-            createdUser.setAccountList(new ArrayList<>());
             createdUser.getAccountList().add(account);
 
             session.persist(createdUser);
-            session.getTransaction().commit();
             return createdUser;
-        }
-    }
-
-    public void addAccountToUserByUserId(long userId, Account account) {
-        transactionsService.executeTransaction(session -> {
-            User user = getUserById(userId);
-            user.getAccountList().add(account);
         });
     }
 
@@ -62,13 +47,24 @@ public class UserDao {
         }
     }
 
-    //todo Заменить на запрос
     public boolean checkUserExistsById(long userId) {
         try (Session session = sessionFactory.openSession()) {
-            User user = session.get(User.class, userId);
-            return Objects.nonNull(user);
+            String hql =  "SELECT COUNT(u) > 0 FROM User u WHERE u.id = :id";
+
+            return session.createQuery(hql, Boolean.class)
+                    .setParameter("id", userId)
+                    .getSingleResult();
         }
     }
 
-
+    public boolean isUserUniqueLogin(String login) {
+        try (Session session = sessionFactory.openSession()) {
+            String hql = "SELECT COUNT(u) > 0 " +
+                    "FROM User u " +
+                    "WHERE u.login = :login";
+            return session.createQuery(hql, Boolean.class)
+                    .setParameter("login", login)
+                    .getSingleResult();
+        }
+    }
 }

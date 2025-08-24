@@ -2,8 +2,7 @@ package ru.spring.core.services;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.spring.core.dao.AccountDao;
-import ru.spring.core.dao.UserDao;
+import ru.spring.core.dao.AccountRepository;
 import ru.spring.core.model.Account;
 import ru.spring.core.model.User;
 
@@ -18,31 +17,31 @@ public class AccountService {
     @Value("${account.transfer-commission}")
     private long defaultCommission;
 
-    private final AccountDao accountDao;
+    private final AccountRepository accountRepository;
 
-    public AccountService(AccountDao accountDao) {
-        this.accountDao = accountDao;
+    public AccountService(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
     }
 
-    public Account createAccountWithoutSaving() {
+    public Account createEmptyAccount() {
         Account account = new Account();
         account.setMoneyAmount(defaultAccountMoneyAmount);
         return account;
     }
 
-    public Account createAccountForUserByUser(User user) {
+    public Account createAccountForUser(User user) {
         Account account = new Account();
         account.setUser(user);
         account.setMoneyAmount(defaultAccountMoneyAmount);
 
-        Account createdAccount = accountDao.createAccountAndReturn(account);
+        Account createdAccount = accountRepository.saveAccount(account);
 
         System.out.println(String.format("Account with id %d successfully created", createdAccount.getId()));
         return createdAccount;
     }
 
     public boolean checkAccountExistsById(long id) {
-        return accountDao.checkAccountExistsById(id);
+        return accountRepository.checkAccountExistsById(id);
     }
 
     public void addMoneyToAccountByAccountId(long accountId, long moneyAmount){
@@ -50,7 +49,7 @@ public class AccountService {
             System.out.println("Amount can't be below zero");
             return;
         }
-        accountDao.addMoneyToAccountByAccountId(accountId, moneyAmount);
+        accountRepository.addMoneyToAccountByAccountId(accountId, moneyAmount);
         System.out.println(String.format("Successfully added %d money to account %d", moneyAmount, accountId));
     }
 
@@ -59,12 +58,12 @@ public class AccountService {
             System.out.println("Amount can't be below zero");
             return;
         }
-        Account account = accountDao.getAccountById(id);
+        Account account = accountRepository.getAccountById(id);
         if(moneyAmount > account.getMoneyAmount()){
             System.out.println("An attempt to withdraw more money than is available on the account");
             return;
         }
-        accountDao.withdrawMoneyToAccountByAccountId(id, moneyAmount);
+        accountRepository.withdrawMoneyToAccountByAccountId(id, moneyAmount);
         System.out.println(String.format("Successfully withdrawn %d money", moneyAmount));
     }
 
@@ -74,32 +73,27 @@ public class AccountService {
             return;
         }
         long commission = defaultCommission;
-        if(accountDao.checkDoBelongTwoAccountToOneUser(idFrom, idTo)) {
+        if(accountRepository.checkDoBelongTwoAccountToOneUser(idFrom, idTo)) {
             commission = 0;
         }
-        Account accountFrom =  accountDao.getAccountById(idFrom);
+        Account accountFrom =  accountRepository.getAccountById(idFrom);
         long moneyAmountWithCommission = moneyAmount * (commission + 100) / 100;
         if(accountFrom.getMoneyAmount() < moneyAmountWithCommission) {
             System.out.println("An attempt to transfer more money with commission than is available on the account");
             return;
         }
-        accountDao.transferMoneyBetweenAccounts(idFrom, idTo, moneyAmountWithCommission, moneyAmount);
+        accountRepository.transferMoneyBetweenAccounts(idFrom, idTo, moneyAmountWithCommission, moneyAmount);
         System.out.println(String.format("Money has been successfully transferred between accounts %d and %d", idFrom, idTo));
     }
 
-    //todo обернуть действия под одну транзакцию
     public void closeAccount(long accountId) {
-        Account accountToClose = accountDao.getAccountById(accountId);
-        List<Account> allUserAccounts = accountDao.getAllAccountsForUserByUserId(accountToClose.getUser().getId());
+        Account accountToClose = accountRepository.getAccountById(accountId);
+        List<Account> allUserAccounts = accountRepository.getAllAccountsForUserByUserId(accountToClose.getUser().getId());
         if(allUserAccounts.size() <= 1) {
             System.out.println("The user has 1 or fewer accounts");
             return;
         }
-        long moneyAmountToTransfer = accountToClose.getMoneyAmount();
-        Account accountForTransfer = allUserAccounts.stream().filter(acc -> acc.getId() != accountId).findFirst().get();
-        addMoneyToAccountByAccountId(accountForTransfer.getId(), moneyAmountToTransfer);
-        accountDao.removeAccount(accountId);
-        System.out.println("All money from account with id " + accountId + " was transfered to account with id "
-                + accountForTransfer.getId() + ". Account closed");
+        accountRepository.closeAccount(accountToClose, allUserAccounts);
+        System.out.println("All money from account with id " + accountId + ". Account closed");
     }
 }
