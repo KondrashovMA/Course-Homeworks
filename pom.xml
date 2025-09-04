@@ -7,8 +7,8 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 
-
     <modules>
         <module>SpringCoreHomeWork</module>
+        <module>PetMVCService</module>
     </modules>
 </project>
