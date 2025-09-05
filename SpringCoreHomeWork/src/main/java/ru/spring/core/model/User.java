@@ -1,12 +1,18 @@
 package ru.spring.core.model;
 
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Data
+@Entity
+@Table(name = "bank_users")
+@Getter
+@Setter
 @NoArgsConstructor
 public class User {
 
@@ -14,11 +20,15 @@ public class User {
         this.login = login;
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(name = "login", unique = true)
     private String login;
 
-    private List<Account> accountList;
+    @OneToMany (mappedBy="user", fetch=FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Account> accountList = new ArrayList<>();
 
     @Override
     public String toString() {

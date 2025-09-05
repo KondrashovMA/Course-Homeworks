@@ -24,7 +24,7 @@ public class UserCreateHandler implements CommandHandler {
         System.out.println("Please enter login for user:");
         String inputResult = inputScanner.next();
         try {
-            if(userService.isUniqueLogin(inputResult)) {
+            if(!userService.isUniqueLogin(inputResult)) {
                 long id = userService.createUserByLoginAndGetId(inputResult);
                 System.out.println("User created with id: " + id + " and login: " + inputResult);
             } else {
