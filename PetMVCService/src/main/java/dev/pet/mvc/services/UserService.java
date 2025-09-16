@@ -36,6 +36,7 @@ public class UserService {
         userForUpdate.setEmail(userDto.getEmail());
         userForUpdate.setName(userDto.getName());
         userForUpdate.setPets(userDto.getPets());
+        usersMap.put(id, userForUpdate);
         return userForUpdate;
     }
 

@@ -46,6 +46,8 @@ public class PetService {
             userService.getUserById(petDto.getUserId()).getPets().add(petDto); // add Pet to new user
         }
 
+        petsMap.put(id, petForUpdate);
+
         return petForUpdate;
     }
 
