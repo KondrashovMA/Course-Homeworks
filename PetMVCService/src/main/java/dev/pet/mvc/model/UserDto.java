@@ -30,6 +30,5 @@ public class UserDto {
     @NotNull
     private Integer age;
 
-
     private List<PetDto> pets;
 }

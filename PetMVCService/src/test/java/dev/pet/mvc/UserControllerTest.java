@@ -1,6 +1,7 @@
 package dev.pet.mvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.pet.mvc.model.PetDto;
 import dev.pet.mvc.model.UserDto;
 import dev.pet.mvc.services.UserService;
 import org.junit.jupiter.api.Assertions;
@@ -24,7 +25,8 @@ public class UserControllerTest {
     @Autowired
     private UserService userService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     void shouldSuccessCreateUser() throws Exception {
@@ -97,6 +99,47 @@ public class UserControllerTest {
     }
 
     @Test
+    void shouldSuccessUpdateUser() throws Exception {
+        UserDto userDto = UserDto
+                .builder()
+                .id(null)
+                .age(20)
+                .email("test@mail.com")
+                .name("TestName")
+                .pets(null)
+                .build();
+
+        userDto = userService.createUserAndReturn(userDto);
+
+        UserDto userDtoForUpdate = UserDto
+                .builder()
+                .id(null)
+                .age(20)
+                .email("test@mail.com")
+                .name("NewTestName")
+                .pets(null)
+                .build();
+
+        String testUserJson = objectMapper.writeValueAsString(userDtoForUpdate);
+
+        String createdTestUserJson = mockMvc.perform(put("/user/update/{id}", userDto.getId(), userDtoForUpdate)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(testUserJson)
+                )
+                .andExpect(status().is(201))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        UserDto userDtoFromResponse = objectMapper.readValue(createdTestUserJson, UserDto.class);
+
+        Assertions.assertNotNull(userDtoFromResponse.getId());
+        Assertions.assertEquals(userDtoForUpdate.getName(), userDtoFromResponse.getName());
+        Assertions.assertEquals(userDto.getId(), userDtoFromResponse.getId());
+    }
+
+
+    @Test
     void shouldSuccessSearchUserById() throws Exception {
         UserDto userDto = UserDto
                 .builder()
@@ -137,7 +180,6 @@ public class UserControllerTest {
 
         mockMvc.perform(delete("/user/delete/{id}", userDto.getId()))
                 .andExpect(status().isNoContent());
-
     }
 
 }

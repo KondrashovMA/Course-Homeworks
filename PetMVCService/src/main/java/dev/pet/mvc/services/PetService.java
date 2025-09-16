@@ -1,7 +1,6 @@
 package dev.pet.mvc.services;
 
 import dev.pet.mvc.model.PetDto;
-import dev.pet.mvc.model.UserDto;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

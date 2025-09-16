@@ -3,6 +3,7 @@ package dev.pet.mvc.services;
 import dev.pet.mvc.model.UserDto;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -23,6 +24,7 @@ public class UserService {
                 .name(userDto.getName())
                 .pets(userDto.getPets())
                 .build();
+        createdUserDto.setPets(new ArrayList<>());
         usersMap.put(id, createdUserDto);
         return createdUserDto;
     }

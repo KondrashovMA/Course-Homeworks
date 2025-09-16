@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 @Builder
@@ -20,7 +21,7 @@ public class PetDto {
     @Min(0)
     private Long id;
 
-    @Null
+    @NotNull
     @Min(0)
     private Long userId;
 
