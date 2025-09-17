@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -20,11 +18,10 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable Long id) {
-        return Optional.ofNullable(userService.getUserById(id))
-                .orElseThrow(() -> new RuntimeException(
-                        "Not found user with id: %s".formatted(id)
-                ));
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userService.getUserById(id));
     }
 
     @PostMapping("/create")
@@ -38,7 +35,7 @@ public class UserController {
     @PutMapping("/update/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody @Valid UserDto userDto) {
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(HttpStatus.OK)
                 .body(userService.updateUserAndReturn(id, userDto));
     }
 

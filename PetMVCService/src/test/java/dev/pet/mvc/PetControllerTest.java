@@ -1,6 +1,7 @@
 package dev.pet.mvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.pet.config.TestSpringConfig;
 import dev.pet.mvc.model.PetDto;
 import dev.pet.mvc.model.UserDto;
 import dev.pet.mvc.services.PetService;
@@ -10,14 +11,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
 @AutoConfigureMockMvc
 @SpringBootTest
+@Import(TestSpringConfig.class)
 public class PetControllerTest {
 
     @Autowired
@@ -84,7 +88,7 @@ public class PetControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(testPetJson)
                 )
-                .andExpect(status().is(201))
+                .andExpect(status().is(200))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();

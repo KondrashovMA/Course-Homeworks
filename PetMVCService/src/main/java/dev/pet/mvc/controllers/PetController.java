@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/pet")
 public class PetController {
@@ -20,12 +18,12 @@ public class PetController {
     }
 
     @GetMapping("/{id}")
-    public PetDto getPetById(@PathVariable Long id) {
-        return Optional.ofNullable(petService.getPetById(id))
-                .orElseThrow(() -> new RuntimeException(
-                        "Not found user with id: %s".formatted(id)
-                ));
+    public ResponseEntity<PetDto> getPetById(@PathVariable Long id) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(petService.getPetById(id));
     }
+
     @PostMapping("/create")
     public ResponseEntity<PetDto> createPet(@RequestBody @Valid PetDto petDto){
         return ResponseEntity
@@ -36,7 +34,7 @@ public class PetController {
     @PutMapping("/update/{id}")
     public ResponseEntity<PetDto> updatePet(@PathVariable Long id, @RequestBody PetDto petDto) {
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(HttpStatus.OK)
                 .body(petService.updatePetAndReturn(id, petDto));
     }
 
@@ -44,7 +42,7 @@ public class PetController {
     public ResponseEntity<Void> deletePetById(@PathVariable Long id) {
         petService.deletePetById(id);
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
+                .status(HttpStatus.OK)
                 .build();
     }
 }

@@ -1,11 +1,11 @@
-package dev.pet.mvc.configs;
+package dev.pet.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
-public class SpringConfig {
+@TestConfiguration
+public class TestSpringConfig {
 
     @Bean
     public ObjectMapper createObjectMapper() {
