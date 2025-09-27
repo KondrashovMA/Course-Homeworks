@@ -1,0 +1,10 @@
+package ru.event.manager.controllers.configuration.model;
+
+import java.time.LocalDateTime;
+
+public record ServerErrorDto(
+        String message,
+        String detailedMessage,
+        LocalDateTime dateTime
+) {
+}
