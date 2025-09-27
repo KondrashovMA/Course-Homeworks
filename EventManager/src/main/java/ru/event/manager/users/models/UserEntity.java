@@ -1,4 +1,4 @@
-package ru.event.manager.locations.models;
+package ru.event.manager.users.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,21 +9,21 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "locations")
-@AllArgsConstructor
 @NoArgsConstructor
-public class LocationEntity {
+@AllArgsConstructor
+@Table(name = "users_for_events")
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
-    private String name;
+    private String login;
 
-    private String address;
+    private String password;
 
-    private Integer capacity;
+    private Integer age;
 
-    private String description;
+    private String role;
 }

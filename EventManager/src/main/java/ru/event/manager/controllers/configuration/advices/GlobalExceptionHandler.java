@@ -1,6 +1,7 @@
 package ru.event.manager.controllers.configuration.advices;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.xml.bind.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -18,8 +19,8 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ServerErrorDto> handleValidationException(MethodArgumentNotValidException e) {
+    @ExceptionHandler({MethodArgumentNotValidException.class, ValidationException.class})
+    public ResponseEntity<ServerErrorDto> handleValidationException(Exception e) {
         log.error("Got validation exception", e);
 
         ServerErrorDto serverErrorDto = new ServerErrorDto(

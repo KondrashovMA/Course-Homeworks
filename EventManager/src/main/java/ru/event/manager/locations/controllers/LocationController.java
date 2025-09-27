@@ -2,6 +2,7 @@ package ru.event.manager.locations.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import jakarta.xml.bind.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +39,9 @@ public class LocationController {
     }
 
     @PostMapping
-    public ResponseEntity<LocationDto> createLocation(@RequestBody @Valid LocationDto locationDtoToCreate) {
+    @Operation(summary = "Создание новой локации",
+            description = "Создать новую локацию. Id задаётся на стороне приложения (базой данных)")
+    public ResponseEntity<LocationDto> createLocation(@RequestBody @Valid LocationDto locationDtoToCreate) throws ValidationException {
         Location createdLocation = locationsService.createLocation(locationAndLocationDtoMapper.toModel(locationDtoToCreate));
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -46,6 +49,9 @@ public class LocationController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Обновить локацию",
+            description = "Обновить место по его идентификатору. " +
+                    "Нельзя менять вместительность локации в меньшую сторону из-за того, что на этой локации уже могут быть запланированы мероприятия")
     public ResponseEntity<LocationDto> updateLocationById(@PathVariable("id") Long id, @RequestBody @Valid LocationDto locationDtoToUpdate) {
         Location updatedLocation = locationsService.updateLocationById(id, locationAndLocationDtoMapper.toModel(locationDtoToUpdate));
         return ResponseEntity
@@ -54,6 +60,8 @@ public class LocationController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Удалить локацию по id",
+            description = "Удалить локацию по идентификатору. Нельзя удалять те локации, на которых уже запланированы какие-то мероприятия")
     public ResponseEntity<Void> deleteLocationById(@PathVariable("id") Long id) {
         locationsService.deleteLocationById(id);
         return ResponseEntity
@@ -62,6 +70,8 @@ public class LocationController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "получить локацию по id",
+            description = "Получить локацию по идентификатору.")
     public ResponseEntity<LocationDto> getLocationById(@PathVariable("id") Long id) {
         Location location = locationsService.getLocationById(id);
         return ResponseEntity

@@ -6,16 +6,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("events")
 public class EventController {
 
+    @PostMapping
+    public void createEvent() {
+
+    }
 
     @GetMapping
     public void getAllEvents() {
 
     }
 
-    @PostMapping
-    public void createEvent() {
-
-    }
 
     @DeleteMapping("/{id}")
     public void deleteEventById() {

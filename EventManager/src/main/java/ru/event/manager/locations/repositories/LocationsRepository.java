@@ -20,4 +20,6 @@ public interface LocationsRepository extends JpaRepository<LocationEntity, Long>
             and (:capacity is null or capacity >= :capacity)
             """, nativeQuery = true)
     List<LocationEntity> getLocations(String name, Integer capacity, Pageable pageable);
+
+    Boolean existsByNameIs(String name);
 }
