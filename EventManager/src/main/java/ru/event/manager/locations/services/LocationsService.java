@@ -2,6 +2,8 @@ package ru.event.manager.locations.services;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.xml.bind.ValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.event.manager.locations.mappers.LocationAndLocationEntityMapper;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class LocationsService {
+
+    private final Logger log = LoggerFactory.getLogger(LocationsService.class);
     private final LocationAndLocationEntityMapper locationAndLocationEntityMapper;
     private final LocationsRepository locationsRepository;
 
@@ -40,7 +44,9 @@ public class LocationsService {
             throw new ValidationException("Location with name %s already exists".formatted(location.name()));
         }
         LocationEntity createdLocationEntity = locationsRepository.save(locationAndLocationEntityMapper.toEntity(location));
-        return locationAndLocationEntityMapper.toModel(createdLocationEntity);
+        Location createdLocation = locationAndLocationEntityMapper.toModel(createdLocationEntity);
+        log.info("Created location: %s".formatted(createdLocation));
+        return createdLocation;
     }
 
     public void deleteLocationById(Long id) {
@@ -50,6 +56,7 @@ public class LocationsService {
             throw new NoSuchElementException("Not found location with id=%s".formatted(id));
         }
         locationsRepository.deleteById(id);
+        log.info("Deleted location with id: %s".formatted(id));
     }
 
     public Location getLocationById(Long id) {
@@ -72,6 +79,8 @@ public class LocationsService {
         }
         locationToUpdateEntity.setId(id);
         LocationEntity updatedLocationEntity = locationsRepository.save(locationToUpdateEntity);
-        return locationAndLocationEntityMapper.toModel(updatedLocationEntity);
+        Location updatedLocation = locationAndLocationEntityMapper.toModel(updatedLocationEntity);
+        log.info("Updated location: %s".formatted(updatedLocation));
+        return updatedLocation;
     }
 }
