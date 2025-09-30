@@ -4,7 +4,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.xml.bind.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.event.manager.locations.mappers.LocationAndLocationEntityMapper;
 import ru.event.manager.locations.models.Location;
@@ -28,12 +27,10 @@ public class LocationsService {
         this.locationsRepository = locationsRepository;
     }
 
-    public List<Location> getAllLocations(String name, Integer capacity, Integer pageNumber, Integer pageSize) {
-        Pageable pageable = Pageable
-                .ofSize(Optional.ofNullable(pageSize).orElse(100))
-                .withPage(Optional.ofNullable(pageNumber).orElse(0));
-        List<LocationEntity> locationEntities = locationsRepository.getLocations(name, capacity, pageable);
+    public List<Location> getAllLocations() {
+        List<LocationEntity> locationEntities = locationsRepository.getLocations();
 
+        log.info("Request for all getting All location");
         return Optional.ofNullable(locationEntities)
                 .map(entities -> entities.stream().map(locationAndLocationEntityMapper::toModel).collect(Collectors.toList()))
                 .orElse(List.of());
