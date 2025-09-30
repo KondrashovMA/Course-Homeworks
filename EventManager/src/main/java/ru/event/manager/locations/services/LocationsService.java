@@ -72,13 +72,17 @@ public class LocationsService {
         if(!locationsRepository.existsById(id)) {
             throw new NoSuchElementException("Not found location with id=%s".formatted(id));
         }
-        LocationEntity locationToUpdateEntity = locationAndLocationEntityMapper.toEntity(locationToUpdate);
-        LocationEntity locationEntity = locationsRepository.findById(id).get();
-        if(locationEntity.getCapacity() > locationToUpdateEntity.getCapacity()) {
+
+        Location existingLocation = getLocationById(id);
+
+        if(existingLocation.capacity() > locationToUpdate.capacity()) {
             throw new RuntimeException("Cannot change location capacity to value less than current value");
         }
+
+        LocationEntity locationToUpdateEntity = locationAndLocationEntityMapper.toEntity(locationToUpdate);
         locationToUpdateEntity.setId(id);
         LocationEntity updatedLocationEntity = locationsRepository.save(locationToUpdateEntity);
+
         Location updatedLocation = locationAndLocationEntityMapper.toModel(updatedLocationEntity);
         log.info("Updated location: %s".formatted(updatedLocation));
         return updatedLocation;
