@@ -28,10 +28,10 @@ public class LocationsService {
     }
 
     public List<Location> getAllLocations() {
-        List<LocationEntity> locationEntities = locationsRepository.getLocations();
+        List<LocationEntity> locationEntities = locationsRepository.findAll();
 
         log.info("Request for all getting All location");
-        return Optional.ofNullable(locationEntities)
+        return Optional.of(locationEntities)
                 .map(entities -> entities.stream().map(locationAndLocationEntityMapper::toModel).collect(Collectors.toList()))
                 .orElse(List.of());
     }
