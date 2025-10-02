@@ -12,7 +12,6 @@ import ru.event.manager.locations.repositories.LocationsRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,9 +30,7 @@ public class LocationsService {
         List<LocationEntity> locationEntities = locationsRepository.findAll();
 
         log.info("Request for all getting All location");
-        return Optional.of(locationEntities)
-                .map(entities -> entities.stream().map(locationAndLocationEntityMapper::toModel).collect(Collectors.toList()))
-                .orElse(List.of());
+        return locationEntities.stream().map(locationAndLocationEntityMapper::toModel).collect(Collectors.toList());
     }
 
     public Location createLocation(Location location) throws ValidationException {
