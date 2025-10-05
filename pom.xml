@@ -10,5 +10,6 @@
     <modules>
         <module>SpringCoreHomeWork</module>
         <module>PetMVCService</module>
+        <module>EventManager</module>
     </modules>
 </project>
