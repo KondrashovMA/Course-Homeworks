@@ -6,7 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.event.manager.users.mappers.JwtResponseMapper;
+import ru.event.manager.users.mappers.UserAndUserResponseDtoMapper;
 import ru.event.manager.users.mappers.UserCredentialsModelAndUserCredentialsDtoMapper;
+import ru.event.manager.users.models.UserResponseDto;
 import ru.event.manager.users.models.auth.JwtResponseDto;
 import ru.event.manager.users.mappers.UserAndUserDtoMapper;
 import ru.event.manager.users.models.UserModel;
@@ -24,40 +27,48 @@ public class UsersController {
     private final UserAndUserDtoMapper userAndUserDtoMapper;
     private final AuthenticationService authenticationService;
     private final UserCredentialsModelAndUserCredentialsDtoMapper userCredentialsModelAndUserCredentialsDtoMapper;
+    private final UserAndUserResponseDtoMapper userAndUserResponseDtoMapper;
+    private final JwtResponseMapper jwtResponseMapper;
 
     public UsersController(UserService userService, UserAndUserDtoMapper userAndUserDtoMapper,
                            UserCredentialsModelAndUserCredentialsDtoMapper userCredentialsModelAndUserCredentialsDtoMapper,
-                           AuthenticationService authenticationService) {
+                           AuthenticationService authenticationService, UserAndUserResponseDtoMapper userAndUserResponseDtoMapper,
+                           JwtResponseMapper jwtResponseMapper) {
         this.userService = userService;
         this.userAndUserDtoMapper = userAndUserDtoMapper;
         this.userCredentialsModelAndUserCredentialsDtoMapper = userCredentialsModelAndUserCredentialsDtoMapper;
         this.authenticationService = authenticationService;
+        this.userAndUserResponseDtoMapper = userAndUserResponseDtoMapper;
+        this.jwtResponseMapper = jwtResponseMapper;
     }
 
     @PostMapping("/auth")
     public ResponseEntity<JwtResponseDto> authenticateUser(@Valid @RequestBody UserCredentialsDto userCredentials) {
         log.info("Authenticate user with login: %s".formatted(userCredentials.login()));
 
-        return ResponseEntity.ok(authenticationService.authenticateUser(userCredentialsModelAndUserCredentialsDtoMapper.toModel(userCredentials)));
+        return ResponseEntity.ok(jwtResponseMapper.toDto(
+                authenticationService.authenticateUser(userCredentialsModelAndUserCredentialsDtoMapper
+                        .toModel(userCredentials))
+        ));
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> registerUser(@RequestBody @Valid UserDto userDto) {
+    public ResponseEntity<UserResponseDto> registerUser(@RequestBody @Valid UserDto userDto) {
         log.info("Create user: %s".formatted(userDto.toString()));
 
         UserModel cratedUser = userService.registerUser(userAndUserDtoMapper.toModel(userDto));
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(userAndUserDtoMapper.toDto(cratedUser));
+                .body(userAndUserResponseDtoMapper.toDto(cratedUser));
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable("userId") Long userId) {
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable("userId") Long userId) {
         log.info("Request to get user with id: %s".formatted(userId));
 
         UserModel user = userService.getUserById(userId);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(userAndUserDtoMapper.toDto(user));
+                .body(userAndUserResponseDtoMapper.toDto(user));
     }
 }

@@ -1,6 +1,5 @@
 package ru.event.manager.locations.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -8,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.event.manager.locations.models.Location;
 import ru.event.manager.locations.models.LocationDto;
@@ -31,6 +31,7 @@ public class LocationControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
+    @WithMockUser(username = "admin", authorities = "ADMIN")
     public void shouldSuccessCreateLocation() throws Exception {
         LocationDto locationDto = new LocationDto(
                 0L,
@@ -57,6 +58,7 @@ public class LocationControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = "ADMIN")
     public void shouldNotCreateLocation_becauseDuplicateName() throws Exception {
         final String locationName = "TestName_duplicate";
         Location location = new Location(
@@ -86,6 +88,7 @@ public class LocationControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = "ADMIN")
     public void shouldSuccessUpdateLocation() throws Exception {
         Location location = new Location(
                 1L,
@@ -123,6 +126,7 @@ public class LocationControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = "ADMIN")
     public void shouldNotUpdateLocation_because_capacityLessThenCurrent() throws Exception {
         Location location = new Location(
                 1L,
@@ -151,6 +155,7 @@ public class LocationControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", authorities = "USER")
     public void shouldSuccessGetAllLocations() throws Exception {
         String locationsJson = mockMvc.perform(get("/locations")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -167,6 +172,7 @@ public class LocationControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", authorities = "USER")
     public void shouldSuccessGetLocationById() throws Exception {
         Long locationId = 1L;
         String locationsJson = mockMvc.perform(get("/locations/{id}", locationId)

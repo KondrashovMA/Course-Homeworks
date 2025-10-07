@@ -1,4 +1,4 @@
-package ru.event.manager.security.handllers;
+package ru.event.manager.security.handllers.errors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 import ru.event.manager.controllers.configuration.model.ServerErrorDto;
 
@@ -15,25 +15,25 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Component
-public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
-    public CustomAuthenticationEntryPoint(ObjectMapper objectMapper) {
+    public CustomAccessDeniedHandler(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
     private final ObjectMapper objectMapper;
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         ServerErrorDto messageResponse = new ServerErrorDto(
-                "Недостаточно прав для выполнения действия. Обратитесь к администратору",
-                authException.getMessage(),
+                "Неавторизован, пожалуйста проверьте правильность логина и пароля",
+                accessDeniedException.getMessage(),
                 LocalDateTime.now()
         );
 
         String strResponse = objectMapper.writeValueAsString(messageResponse);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(HttpStatus.FORBIDDEN.value());
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.getWriter().write(strResponse);
     }
 }

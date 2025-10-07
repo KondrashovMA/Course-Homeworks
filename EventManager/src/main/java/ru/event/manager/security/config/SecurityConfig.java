@@ -15,8 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
-import ru.event.manager.security.handllers.CustomAccessDeniedHandler;
-import ru.event.manager.security.handllers.CustomAuthenticationEntryPoint;
+import ru.event.manager.security.handllers.errors.CustomAccessDeniedHandler;
+import ru.event.manager.security.handllers.errors.CustomAuthenticationEntryPoint;
 import ru.event.manager.security.jwt.JwtTokenFilter;
 import ru.event.manager.security.services.CustomUserDetailService;
 
@@ -52,29 +52,21 @@ public class SecurityConfig {
                         authorizeHttpRequests
                                 .requestMatchers(HttpMethod.POST, "/users")
                                 .permitAll()
-
                                 .requestMatchers(HttpMethod.POST, "/users/auth")
                                 .permitAll()
-
                                 .requestMatchers(HttpMethod.GET, "/users/*")
                                 .hasAnyAuthority("ADMIN")
 
-
                                 .requestMatchers(HttpMethod.GET, "/locations")
                                 .hasAnyAuthority("ADMIN",  "USER")
-
                                 .requestMatchers(HttpMethod.DELETE, "/locations")
                                 .hasAnyAuthority("ADMIN")
-
                                 .requestMatchers(HttpMethod.GET, "/locations/*")
                                 .hasAnyAuthority("ADMIN",  "USER")
-
                                 .requestMatchers(HttpMethod.PUT, "/locations/*")
                                 .hasAnyAuthority("ADMIN")
-
                                 .requestMatchers(HttpMethod.POST, "/locations")
                                 .hasAnyAuthority("ADMIN")
-
 
                                 .requestMatchers(
                                         "/v3/api-docs/**",
@@ -105,7 +97,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        var authProvider = new DaoAuthenticationProvider();
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
         authProvider.setUserDetailsService(customUserDetailService);
         authProvider.setPasswordEncoder(passwordEncoder());

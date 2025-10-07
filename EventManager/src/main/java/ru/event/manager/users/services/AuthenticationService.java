@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import ru.event.manager.security.jwt.JwtTokenManager;
 import ru.event.manager.users.models.UserModel;
 import ru.event.manager.users.models.auth.JwtResponseDto;
+import ru.event.manager.users.models.auth.JwtResponseModel;
 import ru.event.manager.users.models.auth.UserCredentialsModel;
 
 import static ru.event.manager.users.models.auth.UserRoles.ADMIN;
@@ -25,8 +26,9 @@ public class AuthenticationService {
 
     private final JwtTokenManager jwtTokenManager;
     private final AuthenticationManager authenticationManager;
-
     private final UserService userService;
+
+    private final static int DEFAULT_AGE = 21;
 
     public AuthenticationService(
             @Value("${spring.security.admin.login}") String adminLogin,
@@ -46,13 +48,13 @@ public class AuthenticationService {
         this.userService = userService;
     }
 
-    public JwtResponseDto authenticateUser(UserCredentialsModel userCredentialsModel) {
+    public JwtResponseModel authenticateUser(UserCredentialsModel userCredentialsModel) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         userCredentialsModel.login(), userCredentialsModel.password()
                 )
         );
-        return new JwtResponseDto(jwtTokenManager.generateToken(userCredentialsModel.login()));
+        return new JwtResponseModel(jwtTokenManager.generateToken(userCredentialsModel.login()));
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -60,9 +62,9 @@ public class AuthenticationService {
         if(!userService.isUserExistsByLogin(adminLogin)) {
             UserModel adminModel = new UserModel(
                     null,
-                    "admin",
+                    adminLogin,
                     adminPassword,
-                    21,
+                    DEFAULT_AGE,
                     ADMIN
             );
             userService.registerUser(adminModel);
@@ -71,13 +73,12 @@ public class AuthenticationService {
         if(!userService.isUserExistsByLogin(defaultUserLogin)) {
             UserModel defaultUserModel = new UserModel(
                     null,
-                    "user",
+                    defaultUserLogin,
                     defaultUserPassword,
-                    21,
+                    DEFAULT_AGE,
                     USER
             );
             userService.registerUser(defaultUserModel);
         }
     }
-
 }

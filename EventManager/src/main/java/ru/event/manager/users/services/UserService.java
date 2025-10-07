@@ -56,6 +56,7 @@ public class UserService {
 
     public UserModel getUserByLogin(String login) {
         UserEntity userEntity = userRepository.findByLogin(login).orElseThrow(() -> new EntityNotFoundException("Not found user with login %s".formatted(login)));
+        log.info("Get user by id: %s".formatted(userEntity.toString()));
         return userAndUserEntityMapper.toModel(userEntity);
     }
 
